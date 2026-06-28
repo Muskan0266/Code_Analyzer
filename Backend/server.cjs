@@ -2,20 +2,21 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const Groq = require("groq-sdk");
-const path = require("path");
 
 const app = express();
 
-// ---------- MIDDLEWARE ----------
-app.use(cors());
+app.use(
+    cors({
+        origin: "*",
+    })
+);
+
 app.use(express.json());
 
-// ---------- GROQ ----------
 const groq = new Groq({
     apiKey: process.env.GROQ_API_KEY,
 });
 
-// ---------- PROMPT ----------
 function buildPrompt(code) {
     return `
 You are a senior software engineer.
@@ -35,13 +36,14 @@ ${code}
 `;
 }
 
-// ---------- API ----------
 app.post("/api/explain", async (req, res) => {
     try {
         const { code } = req.body;
 
         if (!code) {
-            return res.status(400).json({ error: "Code required" });
+            return res.status(400).json({
+                error: "Code is required",
+            });
         }
 
         const completion = await groq.chat.completions.create({
@@ -54,25 +56,26 @@ app.post("/api/explain", async (req, res) => {
             model: "llama-3.1-8b-instant",
         });
 
-        res.json({
+        return res.json({
             result: completion.choices[0].message.content,
         });
-
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: err.message });
+
+        return res.status(500).json({
+            error: err.message,
+        });
     }
 });
 
-
-
-
-
 app.get("/", (req, res) => {
-    res.json({ message: "server running" });
+    res.json({
+        message: "Server Running Successfully",
+    });
 });
 
-// ---------- SERVER ----------
-app.listen(3000, () => {
-    console.log("Server running on http://localhost:3000");
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
