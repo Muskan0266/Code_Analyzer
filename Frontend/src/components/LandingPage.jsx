@@ -14,21 +14,29 @@ export default function LandingPage() {
       setLoading(true);
       setResult("");
 
-      const res = await fetch("/api/explain");
+      const res = await fetch(`${import.meta.env.BACKEND_URL}/api/explain`,
+        {
+          method: "POST",
+          body: JSON.stringify(code)
+
+        }
+      );
 
       if (!res) throw new Error("No response");
 
       const data = await res.json();
+      console.log(data)
+
 
       if (!res.ok) {
         throw new Error(data.error || "Backend error");
       }
 
-      if (!data.result) {
-        throw new Error("Empty response");
-      }
+      // if (!data.result) {
+      //   throw new Error("Empty response");
+      // }
 
-      setResult(data.result);
+      // setResult(data.result);
 
     } catch (err) {
       setResult("Error: " + err.message);

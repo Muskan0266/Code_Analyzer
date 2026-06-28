@@ -64,14 +64,12 @@ app.post("/api/explain", async (req, res) => {
     }
 });
 
-// ---------- FRONTEND SERVE ----------
-const distPath = path.join(process.cwd(), "../Frontend/dist");
 
-app.use(express.static(distPath));
 
-// ✅ FIXED (NO "*" ERROR)
+
+
 app.get("/", (req, res) => {
-    res.sendFile(path.join(distPath, "index.html"));
+    res.json({ message: "server running" });
 });
 
 // ---------- SERVER ----------
